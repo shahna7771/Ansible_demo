@@ -1,0 +1,71 @@
+---
+- name: Installing and configuring it in AWS instance
+  hosts: all
+  become: true
+
+  vars:
+    package_name:
+      Amazon: httpd
+      Ubuntu: apache2
+
+  tasks:
+   - name: printing OS version
+     debug:
+       msg: "This is operating system = {{ansible_distribution}}"
+
+   - name: install nginx 
+     apt:
+      name: nginx
+      state: present
+     when: ansible_distribution == "Ubuntu"
+
+   - name: install nginx 
+     yum:
+      name: nginx
+      state: present
+     when: ansible_distribution == "Amazon"
+
+   - name: install cronjob 
+     apt:
+      name: cronie
+      state: present
+     when: ansible_distribution == "Ubuntu"
+
+   - name: install cronjob 
+     yum:
+      name: cronie
+      state: present 
+     when: ansible_distribution == "Amazon"
+
+   - name: install apache on ubuntu
+     when: ansible_distribution == "Ubuntu"
+     apt:
+       name: "{{ package_name['Ubuntu'] }}"
+       state: present
+
+   - name: install apache on Amazon ec2
+     when: ansible_distribution == "Amazon"
+     apt:
+      name: "{{package_name['Amazon']}}"
+      state: present
+      
+        
+
+   - name: start nginx
+     service: 
+      name: nginx
+      state: started
+      enabled: true
+     when: ansible_distribution == "Amazon"
+
+   - name: multiple installation by loops together
+     when: ansible_distribution == "Ubuntu"
+     apt:
+        name: "{{item}}"
+        state: present
+     with_items: 
+      - nginx
+      - git
+      - nodejs
+
+

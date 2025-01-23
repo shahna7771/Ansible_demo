@@ -1,0 +1,14 @@
+---
+- name: Launching an instance using ansible.
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: launch an ec2 instance
+      amazon.aws.ec2_instance: 
+        name: AnsibleCreatedInstance
+        key_name: awsKey
+        region: ap-south-1
+        instance_type : t2.micro
+        image_id: ami-00bb6a80f01f03502
+        count: 1
